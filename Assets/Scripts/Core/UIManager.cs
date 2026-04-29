@@ -104,17 +104,18 @@ namespace MemoryMatch.Core
 
         public void ShowMainMenu(bool show)
         {
-            SetPanelVisible(mainMenuPanel, show);
+            StartCoroutine(FadePanel(mainMenuPanel, show));
         }
 
         public void ShowGameUI(bool show)
         {
-            SetPanelVisible(gameUIPanel, show);
+            if (gameUIPanel != null)
+                gameUIPanel.SetActive(show);
         }
 
         public void ShowResultPanel(bool show)
         {
-            SetPanelVisible(resultPanel, show);
+            StartCoroutine(FadePanel(resultPanel, show));
         }
 
         public void ShowPausePanel(bool show)
@@ -211,23 +212,6 @@ namespace MemoryMatch.Core
         {
             if (undoButton != null)
                 undoButton.interactable = enabled;
-        }
-
-        private void SetPanelVisible(GameObject panel, bool show)
-        {
-            if (panel == null)
-                return;
-
-            if (!gameObject.activeInHierarchy)
-            {
-                panel.SetActive(show);
-                CanvasGroup cg = panel.GetComponent<CanvasGroup>();
-                if (cg != null)
-                    cg.alpha = show ? 1f : 0f;
-                return;
-            }
-
-            StartCoroutine(FadePanel(panel, show));
         }
 
         private IEnumerator FadePanel(GameObject panel, bool show)

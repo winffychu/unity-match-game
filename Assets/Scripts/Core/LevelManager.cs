@@ -192,12 +192,6 @@ namespace MemoryMatch.Core
                 StopCoroutine(spawnRoutine);
                 spawnRoutine = null;
             }
-
-            if (cardParent == null)
-            {
-                currentCards.Clear();
-                return;
-            }
             
             for (int i = cardParent.childCount - 1; i >= 0; i--)
             {

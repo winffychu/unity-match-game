@@ -1,87 +1,85 @@
-# Unity 对对消除小游戏 - 完整项目
+# Unity 对对消除小游戏 - 可直接生成可玩场景
 
 ## 项目概述
 
-这是一个完整的 Unity 对对消除（Memory Match）小游戏，支持多关卡、翻牌次数限制、回退操作等功能。
+这是一个 Unity 对对消除（Memory Match）小游戏最小可玩项目骨架，已包含：
+- 核心脚本（多关卡、翻牌限制、撤销、计分、连击）
+- `Packages/manifest.json`（含 TextMeshPro 所需包）
+- `Assets/Editor/MemoryMatchAutoBuilder.cs` 一键自动搭建场景工具
+- 自动生成 `MainScene`、基础 UI、`Card.prefab`、`ComboEffect.prefab`、占位彩色卡面 Sprite
 
-## 项目结构
+## 当前目录结构
 
 ```
 Assets/
+├── Editor/
+│   └── MemoryMatchAutoBuilder.cs
 ├── Scripts/
 │   ├── Core/
-│   │   ├── GameManager.cs      # 游戏主控制器
-│   │   ├── LevelManager.cs     # 关卡管理器
-│   │   ├── UIManager.cs        # UI 管理器
-│   │   └── AudioManager.cs     # 音频管理器
 │   ├── Gameplay/
-│   │   └── Card.cs             # 卡牌逻辑
 │   ├── Data/
-│   │   ├── GameData.cs         # 基础数据模型
-│   │   ├── ScriptableObjects.cs # ScriptableObject 定义
-│   │   └── SaveSystem.cs       # 存档系统
 │   └── Utils/
-│       └── ShuffleUtility.cs   # 洗牌工具
-├── Prefabs/
-│   └── Card.prefab             # 卡牌预制体
 ├── Scenes/
-│   └── Main.unity              # 主场景
-└── Resources/
-    ├── Cards/                  # 卡牌图案
-    └── Audio/                  # 音频资源
+├── Prefabs/
+└── Art/
+Packages/
+└── manifest.json
 ```
 
-## 功能特性
+## 已实现功能
 
-1. **基础玩法**：点击两张卡牌，相同则消除，不同则翻回
+1. **基础玩法**：翻开两张牌，相同则配对成功，不同则翻回
 2. **三关设计**：
-   - 第1关：2x2 网格，4张牌，6次翻牌限制
-   - 第2关：2x4 网格，8张牌，12次翻牌限制
-   - 第3关：4x4 网格，16张牌，24次翻牌限制
-3. **入口功能**：开始挑战、重新挑战
-4. **翻牌次数**：限制次数内通关，次数用完失败
-5. **回退操作**：支持撤销上一步翻牌
-6. **得分系统**：连击加成、通关评分
-7. **数据存档**：保存玩家进度和最佳成绩
+   - 第1关：2x2，6次翻牌限制
+   - 第2关：2x4，12次翻牌限制
+   - 第3关：4x4，24次翻牌限制
+3. **撤销操作**：支持撤销最近一次单张翻牌
+4. **暂停/继续**：支持暂停与恢复
+5. **结果展示**：胜利、失败、全部通关面板
+6. **计分与连击**：包含连击文本与简易连击特效
+7. **存档代码**：包含基础数据与存档脚本
 
 ## 快速开始
 
-### 1. 创建 Unity 项目
-- 使用 Unity 2022.3 LTS 或更新版本
-- 创建 2D 项目
+### 1. 打开项目
+- 使用 Unity 2022.3 LTS 或更新版本打开该目录
+- 等待 Unity 完成脚本编译与包导入
 
-### 2. 导入代码
-1. 在 `Assets` 下创建 `Scripts` 文件夹
-2. 将 `Scripts` 下的所有代码文件复制到对应目录
+### 2. 一键生成可玩场景
+在 Unity 顶部菜单执行：
 
-### 3. 创建卡牌预制体
-1. 在场景中创建一个空物体，命名为 `Card`
-2. 添加 `Card.cs` 脚本
-3. 创建子物体：
-   - `Front`：包含 Image 组件（显示正面图案）
-   - `Back`：包含 Image 组件（显示背面图案）
-   - `MatchedEffect`：匹配成功时的特效（可选）
-4. 将 Card 拖入 Prefabs 文件夹创建预制体
+`Tools > Memory Match > Build Playable Scene`
 
-### 4. 场景设置
-1. 创建空物体 `GameManager`，挂载 `GameManager.cs`
-2. 创建空物体 `LevelManager`，挂载 `LevelManager.cs`
-3. 创建空物体 `UIManager`，挂载 `UIManager.cs`
-4. 创建空物体 `AudioManager`，挂载 `AudioManager.cs`
-5. 在 Canvas 中创建：
-   - MainMenuPanel（主菜单）
-   - GameUIPanel（游戏界面）
-   - ResultPanel（结果面板）
-   - PausePanel（暂停面板）
+该操作会自动：
+1. 创建 `Assets/Scenes/MainScene.unity`
+2. 创建 `Canvas / EventSystem / GameManager / LevelManager / UIManager / AudioManager`
+3. 创建主菜单、游戏UI、结算面板、暂停面板、全通关面板
+4. 创建 `Assets/Prefabs/Card.prefab`
+5. 创建 `Assets/Prefabs/ComboEffect.prefab`
+6. 创建 `Assets/Art/CardColor_*.png` 占位卡牌图片
+7. 将 `MainScene` 加入 Build Settings
 
-### 5. 配置资源
-1. 准备卡牌正面图案（至少8种不同图案）
-2. 准备卡牌背面图案
-3. 准备音效文件（可选）
-4. 在 LevelManager 中配置卡牌图案列表
+### 3. 运行
+- 打开 `MainScene`
+- 点击 Play
+- 在主菜单点击“开始游戏”即可开始
 
-### 6. 运行游戏
-点击 Play 按钮即可运行！
+## 当前资源说明
+
+- 当前自动生成的是**占位美术资源**，可直接运行验证逻辑
+- 音频引用已留接口，但默认不会自动生成音频文件
+- 如需正式发布，建议自行替换：
+  - 卡牌正反面图片
+  - 按钮样式
+  - 背景图
+  - BGM / SFX
+  - Animator / 粒子特效
+
+## 注意事项
+
+1. 若首次打开 Unity 报 TMP 相关导入提示，正常导入即可
+2. 若你修改了脚本私有字段名，需要同步更新 `MemoryMatchAutoBuilder.cs`
+3. 重新执行自动构建工具会覆盖当前打开场景内容，适合在空场景下重建
 
 ## 操作说明
 
@@ -90,10 +88,10 @@ Assets/
 - **暂停按钮**：暂停游戏
 - **主菜单**：开始新游戏或退出
 
-## 扩展建议
+## 后续可扩展方向
 
-1. 添加更多关卡和难度
-2. 实现时间挑战模式
-3. 添加排行榜功能
-4. 实现卡牌收集系统
-5. 添加更多动画和特效
+1. 加入真正的卡面图案资源
+2. 增加设置面板（音量、分辨率等）
+3. 增加更多关卡与难度曲线
+4. 增加排行榜/计时模式
+5. 补充动画控制器与音效资源
