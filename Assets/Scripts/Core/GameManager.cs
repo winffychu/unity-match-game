@@ -65,6 +65,8 @@ namespace MemoryMatch.Core
             uiManager.ShowMainMenu(true);
             uiManager.ShowGameUI(false);
             uiManager.ShowResultPanel(false);
+            if (audioManager != null)
+                audioManager.PlayMenuBGM();
         }
 
         public void StartGame()
@@ -247,18 +249,24 @@ namespace MemoryMatch.Core
             if (currentState != GameState.Playing) return;
             if (flipHistory.Count == 0) return;
 
-            // 如果正在等待配对结果，取消协程并翻回两张牌
+            // 如果正在等待配对结果，取消协程并撤销本轮两次翻牌
             if (selectedCards.Count == 2)
             {
                 if (checkMatchRoutine != null) { StopCoroutine(checkMatchRoutine); checkMatchRoutine = null; }
-                
+
                 Card first = selectedCards[0];
                 Card second = selectedCards[1];
-                if (!first.IsMatched) first.FlipToBack();
-                if (!second.IsMatched) second.FlipToBack();
+                if (!first.IsMatched && first.IsFaceUp) first.FlipToBack();
+                if (!second.IsMatched && second.IsFaceUp) second.FlipToBack();
                 selectedCards.Clear();
-                currentFlipCount--;
+
+                if (flipHistory.Count > 0) flipHistory.Pop();
+                if (flipHistory.Count > 0) flipHistory.Pop();
+                currentFlipCount = Mathf.Max(0, currentFlipCount - 2);
                 uiManager.UpdateFlipText(currentFlipCount, maxFlipCount);
+                uiManager.SetUndoButtonEnabled(flipHistory.Count > 0);
+                currentState = GameState.Playing;
+                return;
             }
 
             // 撤销最后一张翻开的牌
@@ -267,6 +275,8 @@ namespace MemoryMatch.Core
             {
                 record.card.FlipToBack();
                 selectedCards.Remove(record.card);
+                currentFlipCount = Mathf.Max(0, currentFlipCount - 1);
+                uiManager.UpdateFlipText(currentFlipCount, maxFlipCount);
             }
 
             uiManager.SetUndoButtonEnabled(flipHistory.Count > 0);

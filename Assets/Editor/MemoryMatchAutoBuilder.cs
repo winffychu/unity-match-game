@@ -15,6 +15,7 @@ public static class MemoryMatchAutoBuilder
     public static void BuildPlayableScene()
     {
         EnsureFolders();
+        EnsureTextMeshProResources();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         scene.name = "MainScene";
 
@@ -174,6 +175,18 @@ public static class MemoryMatchAutoBuilder
                 AssetDatabase.CreateFolder(System.IO.Path.GetDirectoryName(folder).Replace('\\', '/'), System.IO.Path.GetFileName(folder));
     }
 
+    static void EnsureTextMeshProResources()
+    {
+        if (TMP_Settings.instance != null)
+            return;
+
+        var settings = ScriptableObject.CreateInstance<TMP_Settings>();
+        AssetDatabase.CreateAsset(settings, "Assets/TextMesh Pro/TMP Settings.asset");
+        TMP_Settings.instance = settings;
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     static Canvas CreateCanvas()
     {
         var go = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -239,6 +252,7 @@ public static class MemoryMatchAutoBuilder
         cardImage.color = Color.white;
         var button = root.GetComponent<Button>();
         button.transition = Selectable.Transition.ColorTint;
+        button.targetGraphic = cardImage;
 
         var front = new GameObject("FrontImage", typeof(RectTransform), typeof(Image));
         front.transform.SetParent(root.transform, false);
@@ -247,10 +261,17 @@ public static class MemoryMatchAutoBuilder
         back.transform.SetParent(root.transform, false);
         Stretch(back.GetComponent<RectTransform>(), 0.08f, 0.08f, 0.92f, 0.92f);
 
+        var matchedEffect = new GameObject("MatchedEffect", typeof(RectTransform), typeof(Image));
+        matchedEffect.transform.SetParent(root.transform, false);
+        Stretch(matchedEffect.GetComponent<RectTransform>(), 0f, 0f, 1f, 1f);
+        matchedEffect.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.18f);
+        matchedEffect.SetActive(false);
+
         var card = root.GetComponent<Card>();
         SetPrivateField(card, "cardImage", cardImage);
         SetPrivateField(card, "frontImage", front.GetComponent<Image>());
         SetPrivateField(card, "backImage", back.GetComponent<Image>());
+        SetPrivateField(card, "matchedEffect", matchedEffect);
         PrefabUtility.SaveAsPrefabAsset(root, "Assets/Prefabs/Card.prefab");
         Object.DestroyImmediate(root);
         return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Card.prefab");

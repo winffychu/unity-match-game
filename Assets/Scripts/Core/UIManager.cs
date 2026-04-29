@@ -115,6 +115,7 @@ namespace MemoryMatch.Core
 
         public void ShowResultPanel(bool show)
         {
+            ShowGameUI(!show);
             StartCoroutine(FadePanel(resultPanel, show));
         }
 
