@@ -1,0 +1,53 @@
+name: Build Unity Project
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        with:
+          unityVersion: 2022.3.20f1
+          targetPlatform: StandaloneWindows64
+          buildName: MemoryMatchGame
+          buildsPath: build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MemoryMatchGame-Windows64
+          path: build/StandaloneWindows64
+          retention-days: 7
+
+      - name: List Build Output
+        run: |
+          echo "=== Build Completed ==="
+          ls -la build/StandaloneWindows64/
+          echo "=== Executable ==="
+          find build/StandaloneWindows64 -name "*.exe" -type f

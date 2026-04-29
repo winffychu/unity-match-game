@@ -1,0 +1,14 @@
+/build
+/tmp
+*.log
+.DS_Store
+Library/
+Temp/
+Obj/
+UnityLockfile
+*.pidb
+*.suo
+*.user
+*.userprefs
+.vs/
+ProjectSettings/SceneTemplateSettings.asset

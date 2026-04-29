@@ -1,0 +1,7 @@
+# Unity LFS Configuration
+*.psd filter=lfs diff=lfs merge=lfs -f
+*.png filter=lfs diff=lfs merge=lfs -f
+*.jpg filter=lfs diff=lfs merge=lfs -f
+*.wav filter=lfs diff=lfs merge=lfs -f
+*.mp3 filter=lfs diff=lfs merge=lfs -f
+*.ogg filter=lfs diff=lfs merge=lfs -f
